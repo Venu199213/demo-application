@@ -1,28 +1,34 @@
 pipeline {
     agent any
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Build') {
             steps {
-                // Perform clean install to build and install the project
-                sh 'mvn clean install'
+                bat 'mvn clean install' // Building the project
             }
         }
         stage('Test') {
             steps {
-                // Run unit tests
-                sh 'mvn test'
+                bat 'mvn test' // Running tests
             }
         }
         stage('Deploy') {
             steps {
-                // Simulating deployment step (you can add actual deployment steps here)
+                // Add deployment steps here
                 echo 'Deploying application...'
             }
         }
     }
     post {
+        always {
+            echo 'Cleaning up...'
+        }
         success {
-            echo 'Build completed successfully!'
+            echo 'Build succeeded!'
         }
         failure {
             echo 'Build failed!'
