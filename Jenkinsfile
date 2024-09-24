@@ -3,19 +3,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                // Example: Run a Maven build
-                sh 'mvn clean package'
+                // Perform clean install to build and install the project
+                sh 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
-                // Example: Run unit tests
+                // Run unit tests
                 sh 'mvn test'
             }
         }
         stage('Deploy') {
             steps {
-                // Example: Deploy the WAR file
+                // Simulating deployment step (you can add actual deployment steps here)
                 echo 'Deploying application...'
             }
         }
@@ -29,6 +29,3 @@ pipeline {
         }
     }
 }
-
-
-
