@@ -1,10 +1,11 @@
+# Ignore everything in the target folder except the .war file
+target/*
+!target/*.war
+
 # Ignore the .git directory
 .git
 
-# Ignore the target directory (build artifacts)
-target/
-
-# Ignore any local environment or IDE configuration files
+# Ignore any IDE or unnecessary configuration files
 *.log
 .idea
 *.iml
