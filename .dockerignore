@@ -1,0 +1,12 @@
+# Ignore the .git directory
+.git
+
+# Ignore the target directory (build artifacts)
+target/
+
+# Ignore any local environment or IDE configuration files
+*.log
+.idea
+*.iml
+*.DS_Store
+*.class
