@@ -44,14 +44,14 @@ pipeline {
             steps {
                 script {
                     // Remove the container if it exists
-                    sh """
-                        if [ \$(docker ps -aq -f name=${CONTAINER_NAME}) ]; then
+                    bat """
+                        if exist ${CONTAINER_NAME} (
                             docker rm -f ${CONTAINER_NAME}
-                        fi
+                        )
                     """
                     
                     // Run the Docker container
-                    sh """
+                    bat """
                         docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKER_IMAGE}:${DOCKER_TAG}
                     """
                 }
@@ -61,9 +61,9 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Optionally, you can stop and remove the container here
-            sh "docker stop ${CONTAINER_NAME} || true"
-            sh "docker rm ${CONTAINER_NAME} || true"
+            // Stop and remove the container here
+            bat "docker stop ${CONTAINER_NAME} || exit 0"
+            bat "docker rm ${CONTAINER_NAME} || exit 0"
         }
         success {
             echo 'Build and Docker image creation succeeded!'
@@ -72,5 +72,4 @@ pipeline {
             echo 'Build or Docker image creation failed!'
         }
     }
-    
 }
