@@ -6,6 +6,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "venuanna/demo-application" 
         DOCKER_TAG = "latest"
+        CONTAINER_NAME = "demo-application-container"
     }
     stages {
         stage('Checkout') {
@@ -15,12 +16,12 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'mvn clean install'  // Build the WAR file using Maven
+                bat 'mvn clean install' 
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test'  // Run tests
+                bat 'mvn test'
             }
         }
         stage('Build Docker Image') {
@@ -39,10 +40,30 @@ pipeline {
                 }
             }
         }
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Remove the container if it exists
+                    sh """
+                        if [ \$(docker ps -aq -f name=${CONTAINER_NAME}) ]; then
+                            docker rm -f ${CONTAINER_NAME}
+                        fi
+                    """
+                    
+                    // Run the Docker container
+                    sh """
+                        docker run -d --name ${CONTAINER_NAME} -p 8000:8000 ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    """
+                }
+            }
+        }
     }
     post {
         always {
             echo 'Cleaning up...'
+            // Optionally, you can stop and remove the container here
+            sh "docker stop ${CONTAINER_NAME} || true"
+            sh "docker rm ${CONTAINER_NAME} || true"
         }
         success {
             echo 'Build and Docker image creation succeeded!'
@@ -51,4 +72,5 @@ pipeline {
             echo 'Build or Docker image creation failed!'
         }
     }
+    
 }
