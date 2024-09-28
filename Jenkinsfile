@@ -1,32 +1,40 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven 3.9.9'
+        maven 'Maven 3.9.9'  // Use Maven version 3.9.9
     }
     environment {
-        DOCKER_IMAGE = "demo-application"
-        DOCKER_TAG = "${env.BUILD_NUMBER}" 
+        DOCKER_IMAGE = "demo-application"  // Name of the Docker image
+        DOCKER_TAG = "${env.BUILD_NUMBER}"  // Tag based on the build number
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm 
+                checkout scm  // Check out the source code from the SCM
             }
         }
         stage('Build') {
             steps {
-                bat 'mvn clean install'
+                script {
+                    // Build the Java application using Maven
+                    bat 'mvn clean install'
+                }
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test'
+                script {
+                    // Run tests on the application
+                    bat 'mvn test'
+                }
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Build the Docker image
                     dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    echo "Docker image built: ${dockerImage.id}"  // Print the image ID to console
                 }
             }
         }
