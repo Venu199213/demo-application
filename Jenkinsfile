@@ -1,28 +1,44 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven 3.9.9' // Specify the Maven version you configured in Jenkins
+        maven 'Maven 3.9.9'
+    }
+    environment {
+        DOCKER_IMAGE = "demo-application"
+        DOCKER_TAG = "${env.BUILD_NUMBER}" 
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scm 
             }
         }
         stage('Build') {
             steps {
-                bat 'mvn clean install' // Building the project
+                bat 'mvn clean install'
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test' // Running tests
+                bat 'mvn test'
             }
         }
-        stage('Deploy') {
+        stage('Build Docker Image') {
             steps {
-                // Add deployment steps here
-                echo 'Deploying application...'
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
+            }
+        }
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    // Log in to Docker Hub and push the image
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        dockerImage.push("${DOCKER_TAG}")  // Push with the build number tag
+                        dockerImage.push("latest")  // Also push a "latest" tag
+                    }
+                }
             }
         }
     }
@@ -31,12 +47,10 @@ pipeline {
             echo 'Cleaning up...'
         }
         success {
-            echo 'Build succeeded!'
+            echo 'Build and Docker image creation succeeded!'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build or Docker image creation failed!'
         }
     }
 }
-
-
