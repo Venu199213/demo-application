@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE = "venuanna/demo-application" 
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        DOCKER_TAG = "latest"
     }
     stages {
         stage('Checkout') {
